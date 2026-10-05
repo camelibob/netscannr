@@ -1,6 +1,7 @@
 import argparse
 import sys
 import socket
+import concurrent.futures
 
 def parse_arguments():
     """
@@ -35,7 +36,13 @@ def parse_arguments():
         help="Port to end scanning at (default: 1024)"
     )
 
-    #Number of threads ?
+    #Number of threads flag
+    parser.add_argument(
+        "-t", "--threads",
+        type=int,
+        default=4,
+        help="Number of concurrent threads to use (default: 4)"
+    )
 
     args = parser.parse_args()
 
@@ -67,24 +74,43 @@ def scan_port(ip, port):
         print("An error occured during the port scan.")
         return False
 
+def worker_thread(target, port):
+    """
+    Worker function to be executed by the thread pool.
+    Prints output immediately when an open port is found.
+    """
+    open_port = scan_port(target, port)
+    if open_port:
+        print(f"[+] Port {port} is OPEN.")
+        return port
+    return None
+
+
 if __name__ == "__main__":
     #Test argument parsing
     args = parse_arguments()
 
-    print("--- Scanner Configuration ---")
-    print(f"Target:       {args.target}")
-    print(f"Port Range:   {args.start_port} to {args.end_port}")
-    #print(f"Threads:      {args.threads}")
-    print("-----------------------------")
-
-    print(f"[*] Starting linear scan on {args.target}")
-
+    print(f"[*] Starting multithreaded scan on {args.target}")
+    print(f"[*] Port range: {args.start_port} to {args.end_port}")
+    print(f"[*] Threads: {args.threads}\n")
+    
     open_ports = []
-
-    #TEMP : linear loop to test socket logic
-    for port in range(args.start_port, args.end_port + 1):
-        if scan_port(args.target, port):
-            print(f"[+] Port {port} is OPEN.")
-            open_ports.append(port)
-
-    print(f"\n[*] Linear scan complete. Found {len(open_ports)} open ports.")
+    
+    #ThreadPoolExecutor for concurrent scanning
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.threads) as executor:
+        # Map the worker_thread function to every port in the range
+        # We use list comprehension to pass the target IP along with each port
+        futures = {
+            executor.submit(worker_thread, args.target, port): port 
+            for port in range(args.start_port, args.end_port + 1)
+        }
+        
+        # as_completed yields futures as they finish, regardless of submission order
+        for future in concurrent.futures.as_completed(futures):
+            result = future.result()
+            if result is not None:
+                open_ports.append(result)
+            
+    # Sort the ports for clean output, since threads return in random order
+    open_ports.sort()
+    print(f"\n[*] Scan complete. Found {len(open_ports)} open ports: {open_ports}")
