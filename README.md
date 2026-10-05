@@ -2,7 +2,7 @@
 
 A lightweight, multithreaded TCP network scanner written in pure Python.
 
-NetScannr is designed to operate in restricted user environments where root/administrator privileges are not available. By relying on standard OS-level TCP Connect scans (full 3-way handshake) rather than raw sockets, it provides fast, concurrent port scanning and banner grabbing without the need for external dependencies like Nmap or Scapy.
+**netscannr** is designed to operate in restricted user environments where root/administrator privileges are not available. By relying on standard OS-level TCP Connect scans (full 3-way handshake) rather than raw sockets, it provides fast, concurrent port scanning and banner grabbing without the need for external dependencies like Nmap or Scapy.
 
 ### **Features**
 
