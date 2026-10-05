@@ -1,5 +1,6 @@
 import argparse
 import sys
+import socket
 
 def parse_arguments():
     """
@@ -45,6 +46,27 @@ def parse_arguments():
 
     return args
 
+def scan_port(ip, port):
+    """
+    Attemps a full TCP connection to a specific port on the target IP.
+    Returns True if the port is open, False otherwise.
+    """
+    #create an IPv4 and TCP socket
+    try: 
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            #1sec timeout to prevent the script from hanging
+            sock.settimeout(1.0)
+
+            #connect_ex returns 0 upon successful connection
+            result = sock.connect_ex((ip, port))
+
+            if result == 0:
+                return True
+            return False
+    except Exception:
+        print("An error occured during the port scan.")
+        return False
+
 if __name__ == "__main__":
     #Test argument parsing
     args = parse_arguments()
@@ -54,4 +76,15 @@ if __name__ == "__main__":
     print(f"Port Range:   {args.start_port} to {args.end_port}")
     #print(f"Threads:      {args.threads}")
     print("-----------------------------")
-    print("Ready to implement scanning logic.")
+
+    print(f"[*] Starting linear scan on {args.target}")
+
+    open_ports = []
+
+    #TEMP : linear loop to test socket logic
+    for port in range(args.start_port, args.end_port + 1):
+        if scan_port(args.target, port):
+            print(f"[+] Port {port} is OPEN.")
+            open_ports.append(port)
+
+    print(f"\n[*] Linear scan complete. Found {len(open_ports)} open ports.")
