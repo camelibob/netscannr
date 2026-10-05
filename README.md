@@ -17,13 +17,13 @@ Service Identification: Includes built-in banner grabbing with HTTP-compliant pr
 Automated Logging: Automatically sorts results and exports them to timestamped JSON files in a dedicated log/ directory, making it perfect for CI/CD pipelines or dashboard integrations.
 
 #### **Project Structure**
-
+```
 netscannr/
 ├── src/
 │   └── scanner.py      # Main scanner script
 ├── log/                # Auto-generated directory for JSON scan
 └── README.md
-
+```
 
 #### **Usage**
 
