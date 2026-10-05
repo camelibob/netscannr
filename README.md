@@ -6,15 +6,11 @@ A lightweight, multithreaded TCP network scanner written in pure Python.
 
 ### **Features**
 
-No Root Required: Safely executes full TCP Connect scans in unprivileged environments.
-
-Zero External Dependencies: Built entirely using Python's standard library (socket, argparse, concurrent.futures).
-
-High Concurrency: Utilizes ThreadPoolExecutor to scan thousands of ports in seconds.
-
-Service Identification: Includes built-in banner grabbing with HTTP-compliant probes to identify running services.
-
-Automated Logging: Automatically sorts results and exports them to timestamped JSON files in a dedicated log/ directory, making it perfect for CI/CD pipelines or dashboard integrations.
+- No Root Required: Safely executes full TCP Connect scans in unprivileged environments.
+- Zero External Dependencies: Built entirely using Python's standard library (socket, argparse, concurrent.futures).
+- High Concurrency: Utilizes ThreadPoolExecutor to scan thousands of ports in seconds.
+- Service Identification: Includes built-in banner grabbing with HTTP-compliant probes to identify running services.
+- Automated Logging: Automatically sorts results and exports them to timestamped JSON files in a dedicated log/ directory, making it perfect for CI/CD pipelines or dashboard integrations.
 
 #### **Project Structure**
 ```
@@ -36,7 +32,7 @@ netscannr is run directly from the command line. If no arguments are provided, i
 
 ### **Arguments**
 
-target : Target IP address to scan (Default: 127.0.0.1)
+`target :` Target IP address to scan (Default: 127.0.0.1)
 
 `-s, --start-port :` Port to start scanning from (Default: 1)
 
