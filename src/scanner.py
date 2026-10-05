@@ -2,6 +2,8 @@ import argparse
 import sys
 import socket
 import concurrent.futures
+import json
+from datetime import datetime
 
 def parse_arguments():
     """
@@ -137,3 +139,26 @@ if __name__ == "__main__":
             
     # Sort the ports for clean output, since threads return in random order
     print(f"\n[*] Scan complete. Found {len(scan_results)} open ports.")
+
+#JSON export
+if scan_results:
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe_ip = args.target.replace(".", "_")
+    filename = f"scan_{safe_ip}_{timestamp}.json"
+
+    export_data = {
+        "target": args.target,
+        "scan_date": datetime.now().isoformat(),
+        "total_open_ports": len(scan_results),
+        "open_ports": scan_results
+    }
+
+    #write to file
+    with open(filename, "w") as f:
+        json.dump(export_data, f, indent=4)
+
+    print(f"\n[*] Results exported to a JSON file : {filename}")
+
+
+
+    
