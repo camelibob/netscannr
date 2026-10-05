@@ -56,7 +56,7 @@ def parse_arguments():
 def scan_port(ip, port):
     """
     Attemps a full TCP connection to a specific port on the target IP.
-    Returns True if the port is open, False otherwise.
+    Returns a tuple: (is_open (bool), banner(str)).
     """
     #create an IPv4 and TCP socket
     try: 
@@ -68,21 +68,44 @@ def scan_port(ip, port):
             result = sock.connect_ex((ip, port))
 
             if result == 0:
-                return True
-            return False
+                banner = ""
+                try:
+                    #Port is open. Extend timeout slightly to wait for a banner.
+                    sock.settimeout(1.5)
+
+                    #Send a generic request to provoke a response from services (like HTTP)
+                    #that wait for the client to speak first.
+                    sock.sendall(b"HEAD / HTTP/1.0\n\r\n")
+
+                    data = sock.recv(1024)
+                    if data:
+                        #Decode, ignore weird characters and grab the first line to keep terminal clean
+                        banner = data.decode("utf-8", errors="ignore").splitlines()[0].strip()
+                except socket.timeout:
+                    banner = "No banner, only hulk (Timeout)"
+                except Exception:
+                    banner = "No banner, only hulk (Connection Reset/Error)"
+                return True, banner
+            return False, ""
     except Exception:
-        print("An error occured during the port scan.")
-        return False
+        print("An error occured, try again.")
+        return False, ""
 
 def worker_thread(target, port):
     """
     Worker function to be executed by the thread pool.
     Prints output immediately when an open port is found.
     """
-    open_port = scan_port(target, port)
-    if open_port:
-        print(f"[+] Port {port} is OPEN.")
-        return port
+    is_open, banner = scan_port(target, port)
+
+    
+    if is_open:
+        #Format output for CLI
+        display_banner = f" [{banner}]" if banner else ""
+        print(f"[+] Port {port:<5} is OPEN{display_banner}")
+
+        #return a tuple so the main thread can populate the dictionnary
+        return port, banner        
     return None
 
 
@@ -94,7 +117,7 @@ if __name__ == "__main__":
     print(f"[*] Port range: {args.start_port} to {args.end_port}")
     print(f"[*] Threads: {args.threads}\n")
     
-    open_ports = []
+    scan_results = {}
     
     #ThreadPoolExecutor for concurrent scanning
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.threads) as executor:
@@ -109,8 +132,8 @@ if __name__ == "__main__":
         for future in concurrent.futures.as_completed(futures):
             result = future.result()
             if result is not None:
-                open_ports.append(result)
+                port_num, banner_text = result
+                scan_results[port_num] = banner_text
             
     # Sort the ports for clean output, since threads return in random order
-    open_ports.sort()
-    print(f"\n[*] Scan complete. Found {len(open_ports)} open ports: {open_ports}")
+    print(f"\n[*] Scan complete. Found {len(scan_results)} open ports.")
