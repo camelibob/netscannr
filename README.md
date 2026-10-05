@@ -4,7 +4,7 @@ A lightweight, multithreaded TCP network scanner written in pure Python.
 
 NetScannr is designed to operate in restricted user environments where root/administrator privileges are not available. By relying on standard OS-level TCP Connect scans (full 3-way handshake) rather than raw sockets, it provides fast, concurrent port scanning and banner grabbing without the need for external dependencies like Nmap or Scapy.
 
-#### **Features**
+### **Features**
 
 No Root Required: Safely executes full TCP Connect scans in unprivileged environments.
 
@@ -25,16 +25,16 @@ netscannr/
 └── README.md
 ```
 
-#### **Usage**
+### **Usage**
 
 netscannr is run directly from the command line. If no arguments are provided, it safely defaults to scanning ports 1-1024 on 127.0.0.1 using 4 concurrent threads.
 
-#### **Syntax**
+### **Syntax**
 
 `python3 src/scanner.py [target] [-s START_PORT] [-e END_PORT] [-t THREADS]`
 
 
-#### **Arguments**
+### **Arguments**
 
 target : Target IP address to scan (Default: 127.0.0.1)
 
@@ -44,7 +44,7 @@ target : Target IP address to scan (Default: 127.0.0.1)
 
 `-t, --threads :` Number of concurrent threads to use (Default: 4)
 
-#### **Examples**
+### **Examples**
 
 1. Basic Local Scan:
 
@@ -63,7 +63,7 @@ Scan all 65,535 ports on a remote server with high concurrency. (Note: Adjust th
 `python3 src/scanner.py 100.124.149.109 -s 1 -e 65535 -t 100`
 
 
-#### **Output (JSON Export)**
+### **Output (JSON Export)**
 
 Upon completion, netscannr displays a summary in the terminal and generates a JSON artifact in the log/ directory.
 
@@ -80,6 +80,6 @@ Example output (log/scan_100_124_149_109_20261005_120500.json):
 }
 ```
 
-### **Disclaimer**
+## **Disclaimer**
 
 This tool is intended for educational purposes and authorized auditing only. Do not use this tool to scan networks, servers, or devices that you do not own or do not have explicit, written permission to test. The author is not responsible for any misuse or damage caused by this program.
