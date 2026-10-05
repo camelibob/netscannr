@@ -31,36 +31,36 @@ netscannr is run directly from the command line. If no arguments are provided, i
 
 #### **Syntax**
 
-python3 src/scanner.py [target] [-s START_PORT] [-e END_PORT] [-t THREADS]
+`python3 src/scanner.py [target] [-s START_PORT] [-e END_PORT] [-t THREADS]`
 
 
 #### **Arguments**
 
 target : Target IP address to scan (Default: 127.0.0.1)
 
--s, --start-port : Port to start scanning from (Default: 1)
+`-s, --start-port :` Port to start scanning from (Default: 1)
 
--e, --end-port : Port to end scanning at (Default: 1024)
+`-e, --end-port :` Port to end scanning at (Default: 1024)
 
--t, --threads : Number of concurrent threads to use (Default: 4)
+`-t, --threads :` Number of concurrent threads to use (Default: 4)
 
 #### **Examples**
 
 1. Basic Local Scan:
 
-python3 src/scanner.py
+`python3 src/scanner.py`
 
 
 2. Targeted Service Scan (Fast):
 Scan common web and SSH ports on a specific IP using 20 threads.
 
-python3 src/scanner.py 192.168.1.50 -s 20 -e 100 -t 20
+`python3 src/scanner.py 192.168.1.50 -s 20 -e 100 -t 20`
 
 
 3. Comprehensive Network Scan:
 Scan all 65,535 ports on a remote server with high concurrency. (Note: Adjust thread count based on your host OS and network capabilities).
 
-python3 src/scanner.py 100.124.149.109 -s 1 -e 65535 -t 100
+`python3 src/scanner.py 100.124.149.109 -s 1 -e 65535 -t 100`
 
 
 #### **Output (JSON Export)**
@@ -68,7 +68,7 @@ python3 src/scanner.py 100.124.149.109 -s 1 -e 65535 -t 100
 Upon completion, netscannr displays a summary in the terminal and generates a JSON artifact in the log/ directory.
 
 Example output (log/scan_100_124_149_109_20261005_120500.json):
-
+```json
 {
     "target": "100.124.149.109",
     "scan_date": "2026-10-05T12:05:00.123456",
@@ -78,7 +78,7 @@ Example output (log/scan_100_124_149_109_20261005_120500.json):
         "80": "HTTP/1.0 302 Found"
     }
 }
-
+```
 
 ### **Disclaimer**
 
