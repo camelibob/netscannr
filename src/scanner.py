@@ -4,6 +4,7 @@ import socket
 import concurrent.futures
 import json
 from datetime import datetime
+from pathlib import Path
 
 def parse_arguments():
     """
@@ -146,6 +147,10 @@ if scan_results:
     safe_ip = args.target.replace(".", "_")
     filename = f"scan_{safe_ip}_{timestamp}.json"
 
+    log_dir = Path("logs")
+
+    log_dir.mkdir(parents=True, exist_ok=True)
+    filepath = log_dir / filename
     export_data = {
         "target": args.target,
         "scan_date": datetime.now().isoformat(),
@@ -154,10 +159,10 @@ if scan_results:
     }
 
     #write to file
-    with open(filename, "w") as f:
+    with open(filepath, "w") as f:
         json.dump(export_data, f, indent=4)
 
-    print(f"\n[*] Results exported to a JSON file : {filename}")
+    print(f"\n[*] Results exported to a JSON file : {filepath.absolute()}")
 
 
 
