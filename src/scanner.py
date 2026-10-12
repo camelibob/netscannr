@@ -54,6 +54,17 @@ def parse_arguments():
         print("Error: Invalid port range specified.")
         sys.exit(1)
 
+    if args.threads < 1:
+        print("Error: Thread count must be at least 1.")
+        sys.exit(1)
+
+    #Resolve once up front so a bad target fails fast instead of once per port
+    try:
+        socket.gethostbyname(args.target)
+    except socket.gaierror:
+        print(f"Error: Cannot resolve target '{args.target}'.")
+        sys.exit(1)
+
     return args
 
 def scan_port(ip, port):
@@ -78,7 +89,7 @@ def scan_port(ip, port):
 
                     #Send a generic request to provoke a response from services (like HTTP)
                     #that wait for the client to speak first.
-                    sock.sendall(b"HEAD / HTTP/1.0\n\r\n")
+                    sock.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
 
                     data = sock.recv(1024)
                     if data:
@@ -139,31 +150,28 @@ if __name__ == "__main__":
                 scan_results[port_num] = banner_text
             
     # Sort the ports for clean output, since threads return in random order
+    scan_results = dict(sorted(scan_results.items()))
     print(f"\n[*] Scan complete. Found {len(scan_results)} open ports.")
 
-#JSON export
-if scan_results:
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_ip = args.target.replace(".", "_")
-    filename = f"scan_{safe_ip}_{timestamp}.json"
+    #JSON export
+    if scan_results:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_ip = args.target.replace(".", "_")
+        filename = f"scan_{safe_ip}_{timestamp}.json"
 
-    log_dir = Path("logs")
+        log_dir = Path("logs")
 
-    log_dir.mkdir(parents=True, exist_ok=True)
-    filepath = log_dir / filename
-    export_data = {
-        "target": args.target,
-        "scan_date": datetime.now().isoformat(),
-        "total_open_ports": len(scan_results),
-        "open_ports": scan_results
-    }
+        log_dir.mkdir(parents=True, exist_ok=True)
+        filepath = log_dir / filename
+        export_data = {
+            "target": args.target,
+            "scan_date": datetime.now().isoformat(),
+            "total_open_ports": len(scan_results),
+            "open_ports": scan_results
+        }
 
-    #write to file
-    with open(filepath, "w") as f:
-        json.dump(export_data, f, indent=4)
+        #write to file
+        with open(filepath, "w") as f:
+            json.dump(export_data, f, indent=4)
 
-    print(f"\n[*] Results exported to a JSON file : {filepath.absolute()}")
-
-
-
-    
+        print(f"\n[*] Results exported to a JSON file : {filepath.absolute()}")

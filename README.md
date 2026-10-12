@@ -10,14 +10,14 @@ A lightweight, multithreaded TCP network scanner written in pure Python.
 - Zero External Dependencies: Built entirely using Python's standard library (socket, argparse, concurrent.futures).
 - High Concurrency: Utilizes ThreadPoolExecutor to scan thousands of ports in seconds.
 - Service Identification: Includes built-in banner grabbing with HTTP-compliant probes to identify running services.
-- Automated Logging: Automatically sorts results and exports them to timestamped JSON files in a dedicated log/ directory, making it perfect for CI/CD pipelines or dashboard integrations.
+- Automated Logging: Automatically sorts results and exports them to timestamped JSON files in a dedicated logs/ directory, making it perfect for CI/CD pipelines or dashboard integrations.
 
 #### **Project Structure**
 ```
 netscannr/
 ├── src/
 │   └── scanner.py      # Main scanner script
-├── log/                # Auto-generated directory for JSON scan
+├── logs/               # Auto-generated directory for JSON scan
 └── README.md
 ```
 
@@ -61,9 +61,9 @@ Scan all 65,535 ports on a remote server with high concurrency. (Note: Adjust th
 
 ### **Output (JSON Export)**
 
-Upon completion, netscannr displays a summary in the terminal and generates a JSON artifact in the log/ directory.
+Upon completion, netscannr displays a summary in the terminal and generates a JSON artifact in the logs/ directory.
 
-Example output (log/scan_100_124_149_109_20261005_120500.json):
+Example output (logs/scan_100_124_149_109_20261005_120500.json):
 ```json
 {
     "target": "192.0.2.10",
