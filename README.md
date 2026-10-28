@@ -2,15 +2,14 @@
 
 A lightweight, multithreaded TCP network scanner written in pure Python.
 
-**netscannr** is designed to operate in restricted user environments where root/administrator privileges are not available. By relying on standard OS-level TCP Connect scans (full 3-way handshake) rather than raw sockets, it provides fast, concurrent port scanning and banner grabbing without the need for external dependencies like Nmap or Scapy.
+**netscannr** is designed to operate in restricted user environments where root/administrator privileges are not available. By relying on standard OS-level TCP Connect scans (full 3-way handshake) rather than raw sockets, it provides concurrent port scanning and banner grabbing without the need for external dependencies like Nmap or Scapy.
 
 ### **Features**
 
 - No Root Required: Safely executes full TCP Connect scans in unprivileged environments.
 - Zero External Dependencies: Built entirely using Python's standard library (socket, argparse, concurrent.futures).
-- High Concurrency: Utilizes ThreadPoolExecutor to scan thousands of ports in seconds.
 - Service Identification: Includes built-in banner grabbing with HTTP-compliant probes to identify running services.
-- Automated Logging: Automatically sorts results and exports them to timestamped JSON files in a dedicated logs/ directory, making it perfect for CI/CD pipelines or dashboard integrations.
+- Automated Logging: Automatically sorts results and exports them to timestamped JSON files in a dedicated logs/ directory which are suitable for further processing.
 
 #### **Project Structure**
 ```
@@ -47,14 +46,14 @@ netscannr is run directly from the command line. If no arguments are provided, i
 `python3 src/scanner.py`
 
 
-2. Targeted Service Scan (Fast):
+2. Targeted Service Scan:
 Scan common web and SSH ports on a specific IP using 20 threads.
 
-`python3 src/scanner.py 192.168.1.50 -s 20 -e 100 -t 20`
+`python3 src/scanner.py 192.0.2.10 -s 20 -e 100 -t 20`
 
 
-3. Comprehensive Network Scan:
-Scan all 65,535 ports on a remote server with high concurrency. (Note: Adjust thread count based on your host OS and network capabilities).
+3. Full Port Scan:
+Scan all 65,535 ports on a single host. (Note: Adjust thread count based on your host OS and network capabilities).
 
 `python3 src/scanner.py 192.0.2.10 -s 1 -e 65535 -t 100`
 
@@ -63,18 +62,25 @@ Scan all 65,535 ports on a remote server with high concurrency. (Note: Adjust th
 
 Upon completion, netscannr displays a summary in the terminal and generates a JSON artifact in the logs/ directory.
 
-Example output (logs/scan_100_124_149_109_20261005_120500.json):
+Example output (illustrative; `192.0.2.10` is a documentation address reserved by RFC 5737):
+
 ```json
 {
     "target": "192.0.2.10",
-    "scan_date": "2026-10-05T12:05:00.123456",
+    "scan_date": "2026-10-12T11:42:17.384912",
     "total_open_ports": 2,
     "open_ports": {
-        "22": "SSH-2.0-OpenSSH_8.4p1 Debian-5+deb11u1",
-        "80": "HTTP/1.0 302 Found"
+        "22": "SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13",
+        "80": "HTTP/1.1 301 Moved Permanently"
     }
 }
 ```
+
+### Limitations
+
+- TCP only (no UDP scanning).
+- TCP Connect scans complete the full handshake, so they are logged by target hosts and easily detected by IDS; this tool is not designed for stealth.
+- Banner grabbing is basic: services that do not send a banner or respond to the HTTP probe are reported without identification.
 
 ## **Disclaimer**
 

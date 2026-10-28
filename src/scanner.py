@@ -96,9 +96,9 @@ def scan_port(ip, port):
                         #Decode, ignore weird characters and grab the first line to keep terminal clean
                         banner = data.decode("utf-8", errors="ignore").splitlines()[0].strip()
                 except socket.timeout:
-                    banner = "No banner, only hulk (Timeout)"
+                    banner = "No banner (Timeout)"
                 except Exception:
-                    banner = "No banner, only hulk (Connection Reset/Error)"
+                    banner = "No banner (Connection Reset/Error)"
                 return True, banner
             return False, ""
     except Exception:
